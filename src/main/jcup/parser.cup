@@ -1,0 +1,288 @@
+
+package jcup;
+import jcup.Symbols;
+import java_cup.runtime.Symbol;
+
+parser code {:
+
+    public void syntax_error(Symbol token){
+    	System.err.println("Syntax error at line: " + (token.right) + " at column: " + (token.left));
+    }
+
+    public void unrecovered_syntax_error(Symbol token){
+        System.err.println("Fatal error at line: " + (token.right) + " at column: " + (token.left));
+    }
+
+:}
+
+/* Terminals (tokens returned by the scanner). */
+terminal    AUTO, BREAK, CASE, CHAR, CONST, CONTINUE, DEFAULT, DO, DOUBLE, ELSE,
+            ENUM, EXTERN, FLOAT, FOR, GOTO, IF, INT, LONG, REGISTER, RETURN, SHORT,
+            SIGNED, SIZEOF, STATIC, STRUCT, SWITCH, TYPEDEF, UNION, UNSIGNED, VOID,
+            VOLATILE, WHILE, COMMA, SEMICOLON, INCREMENT, DECREMENT,
+            EQUAL_EQUAL, GREATER_EQUAL, GREATER, TERNARY, LESS_EQUAL, LESS,
+            NOT_EQUAL, OR, AND, NOT, EQUAL, PLUS, MINUS, TIMES, DIV, MODULE,
+            RBO, RBC, SBO, SBC, CBO, CBC, COLON, DOT, PLUS_ASSIGNMENT, MINUS_ASSIGNMENT,
+            TIMES_ASSIGNMENT, DIV_ASSIGNMENT, BIT_AND, XOR, BIT_OR, RIGHT_SHIFT, LEFT_SHIFT,
+            COMPLEMENT, MOD_ASSIGNMENT, AND_ASSIGNMENT, XOR_ASSIGNMENT, OR_ASSIGNMENT,
+            LEFT_SHIFT_ASSIGNMENT, RIGHT_SHIFT_ASSIGNMENT, OP, ERROR, TRUE, FALSE, READ, WRITE;
+
+terminal Integer DEC_LIT;
+terminal Integer OCTAL_LIT;
+terminal Integer HEX_LIT;
+terminal double DOUBLE_LIT;
+terminal char CHAR_LIT;
+terminal String STRING_LIT;
+terminal String IDENTIFIER;
+
+non terminal String program;
+non terminal decls, decl, constant_decl, variable_decl, variable_list, type,
+             function_decls, function_decl, opt_function_parameters,
+             function_parameters, statements, statement, if_statement, opt_else,
+             while_statement, expression, opt_parameters,
+             parameters, literal_value, for_statement, switch_statement,
+             do_statement, read_statement, write_statement, return_statement,
+             switch_cases, switch_case, opt_for_expression;
+
+/* Precedences */
+precedence nonassoc EQUAL;
+precedence left OR;
+precedence left AND;
+precedence nonassoc NOT_EQUAL, EQUAL_EQUAL;
+precedence nonassoc GREATER, GREATER_EQUAL, LESS, LESS_EQUAL;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIV, MODULE;
+precedence left NOT;
+precedence nonassoc PLUS_ASSIGNMENT, MINUS_ASSIGNMENT, TIMES_ASSIGNMENT, DIV_ASSIGNMENT, MOD_ASSIGNMENT;
+
+start with program;
+
+program ::=
+      decls function_decls {: RESULT = "Done parsing"; :}
+;
+
+decls ::=
+      decls decl SEMICOLON
+    | //empty
+    | decls decl error
+;
+
+decl ::=
+      constant_decl
+    | variable_decl
+;
+
+constant_decl ::=
+    CONST type IDENTIFIER EQUAL IDENTIFIER
+;
+
+variable_decl ::=
+      type IDENTIFIER
+    | type IDENTIFIER COMMA variable_list
+;
+
+variable_list ::=
+      IDENTIFIER
+    | variable_list COMMA IDENTIFIER
+;
+
+function_decls ::=
+      function_decl
+    | function_decls function_decl
+;
+
+function_decl ::=
+      type IDENTIFIER RBO opt_function_parameters RBC CBO statements CBC
+    | VOID IDENTIFIER RBO opt_function_parameters RBC CBO statements CBC
+    | type IDENTIFIER RBO opt_function_parameters error CBO statements CBC
+    | VOID IDENTIFIER RBO opt_function_parameters error CBO statements CBC
+    | type IDENTIFIER RBO opt_function_parameters RBC error statements CBC
+    | VOID IDENTIFIER RBO opt_function_parameters RBC error statements CBC
+;
+
+opt_function_parameters ::=
+      function_parameters
+    | //empty
+;
+
+function_parameters ::=
+      type IDENTIFIER
+    | function_parameters COMMA type IDENTIFIER
+;
+
+statements ::=
+      statements statement
+    | //empty
+;
+
+statement ::=
+      if_statement
+    | constant_decl SEMICOLON
+    | variable_decl SEMICOLON
+    | while_statement
+    | for_statement
+    | switch_statement
+    | do_statement
+    | read_statement
+    | write_statement
+    | CONTINUE SEMICOLON
+    | BREAK SEMICOLON
+    | return_statement SEMICOLON
+    | expression SEMICOLON
+    | constant_decl error
+    | variable_decl error
+    | expression error
+    | return_statement error
+    | CONTINUE error
+    | BREAK error
+;
+
+if_statement ::=
+      IF RBO expression RBC CBO statements CBC opt_else
+    | IF error expression RBC CBO statements CBC opt_else
+    | IF RBO error RBC CBO statements CBC opt_else
+    | IF RBO expression error CBO statements CBC opt_else
+    | IF RBO expression RBC error statements CBC opt_else
+    | IF RBO expression RBC CBO statements error opt_else
+;
+
+opt_else ::=
+      ELSE CBO statements CBC
+    | //empty
+    | ELSE error statements CBC
+;
+
+while_statement ::=
+      WHILE RBO expression RBC CBO statements CBC
+    | WHILE error expression RBC CBO statements CBC
+    | WHILE RBO error RBC CBO statements CBC
+    | WHILE RBO expression error CBO statements CBC
+    | WHILE RBO expression RBC error statements CBC
+;
+
+for_statement ::=
+        FOR RBO opt_for_expression SEMICOLON opt_for_expression SEMICOLON opt_for_expression RBC CBO statements CBC
+      | FOR error opt_for_expression SEMICOLON opt_for_expression SEMICOLON opt_for_expression RBC CBO statements CBC
+      | FOR RBO opt_for_expression error opt_for_expression SEMICOLON opt_for_expression RBC CBO statements CBC
+      | FOR RBO opt_for_expression SEMICOLON opt_for_expression error opt_for_expression RBC CBO statements CBC
+      | FOR RBO opt_for_expression SEMICOLON opt_for_expression SEMICOLON opt_for_expression error CBO statements CBC
+      | FOR RBO opt_for_expression SEMICOLON opt_for_expression SEMICOLON opt_for_expression RBC error statements CBC
+;
+
+opt_for_expression ::=
+      expression
+    | //empty
+;
+
+switch_statement ::=
+      SWITCH RBO IDENTIFIER RBC CBO switch_cases CBC
+    | SWITCH error IDENTIFIER RBC CBO switch_cases CBC
+    | SWITCH RBO error RBC CBO switch_cases CBC
+    | SWITCH RBO IDENTIFIER error CBO switch_cases CBC
+    | SWITCH RBO IDENTIFIER RBC error switch_cases CBC
+;
+
+switch_cases ::=
+      switch_cases switch_case
+    | //empty
+;
+
+switch_case ::=
+      CASE literal_value COLON statements
+    | DEFAULT COLON statements
+    | CASE error COLON statements
+    | CASE literal_value error statements
+    | DEFAULT error statements
+;
+
+do_statement ::=
+      DO CBO statements CBC WHILE RBO expression RBC SEMICOLON
+    | DO error statements CBC WHILE RBO expression RBC SEMICOLON
+    | DO CBO statements error WHILE RBO expression RBC SEMICOLON
+    | DO CBO statements CBC error RBO expression RBC SEMICOLON
+    | DO CBO statements CBC WHILE error expression RBC SEMICOLON
+    | DO CBO statements CBC WHILE RBO error RBC SEMICOLON
+    | DO CBO statements CBC WHILE RBO expression error SEMICOLON
+;
+
+read_statement ::=
+      READ RBO RBC SEMICOLON
+    | READ RBO IDENTIFIER RBC SEMICOLON
+    | READ error IDENTIFIER RBC SEMICOLON
+    | READ error RBC SEMICOLON
+    | READ RBO IDENTIFIER error SEMICOLON
+    | READ RBO error SEMICOLON
+;
+
+write_statement ::=
+      WRITE RBO parameters RBC SEMICOLON
+    | WRITE error parameters RBC SEMICOLON
+    | WRITE RBO error RBC SEMICOLON
+    | WRITE RBO parameters error SEMICOLON
+;
+
+return_statement ::=
+      RETURN expression
+    | RETURN
+;
+
+expression ::=
+      expression EQUAL_EQUAL expression
+    | expression NOT_EQUAL expression
+    | expression GREATER_EQUAL expression
+    | expression GREATER expression
+    | expression LESS_EQUAL expression
+    | expression LESS expression
+    | expression INCREMENT
+    | expression DECREMENT
+    | expression PLUS expression
+    | expression MINUS expression
+    | expression TIMES expression
+    | expression DIV expression
+    | expression MODULE expression
+    | MINUS expression
+    | NOT expression
+    | IDENTIFIER RBO opt_parameters RBC
+    | IDENTIFIER PLUS_ASSIGNMENT expression
+    | IDENTIFIER MINUS_ASSIGNMENT expression
+    | IDENTIFIER TIMES_ASSIGNMENT expression
+    | IDENTIFIER DIV_ASSIGNMENT expression
+    | IDENTIFIER MOD_ASSIGNMENT expression
+    | IDENTIFIER EQUAL expression
+    | expression AND expression
+    | expression OR expression
+    | literal_value
+    | IDENTIFIER
+    | RBO expression RBC
+;
+
+opt_parameters ::=
+      parameters
+    | //empty
+;
+
+parameters ::=
+      expression
+    | parameters COMMA expression
+;
+
+literal_value ::=
+      DEC_LIT
+    | OCTAL_LIT
+    | HEX_LIT
+    | DOUBLE_LIT
+    | CHAR_LIT
+    | TRUE
+    | FALSE
+;
+
+type ::=
+      INT
+    | LONG
+    | CHAR
+    | SHORT
+;
+
+
+
+
