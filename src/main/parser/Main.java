@@ -1,12 +1,12 @@
 import java_cup.runtime.DefaultSymbolFactory;
 import java_cup.runtime.SymbolFactory;
+import jcup.Parser;
+import jflex.Lexer;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
-import jflex.Lexer;
-import jcup.Parser;
 
 class Main {
 	private static String filePath = "Switch_Read_Write.c";

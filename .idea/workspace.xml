@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c55fa7c1-3388-4e40-ab2d-68775eefff0b" name="Default Changelist" comment="" />
+    <list default="true" id="c55fa7c1-3388-4e40-ab2d-68775eefff0b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Switch_Read_Write.c" beforeDir="false" afterPath="$PROJECT_DIR$/Switch_Read_Write.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/jcup/parser.cup" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/jcup/parser.cup" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/parser/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/parser/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/semanticRecords/Record.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/semanticRecords/Record.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/semantic/SemanticStack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/semantic/SemanticStack.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -69,6 +76,21 @@
       <updated>1622842504795</updated>
     </task>
     <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.cup" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Scanner$Main.ic" NAME="Main Coverage Results" MODIFIED="1623136572864" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />

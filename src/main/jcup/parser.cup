@@ -2,9 +2,11 @@
 package jcup;
 import jcup.Symbols;
 import java_cup.runtime.Symbol;
+import semantic.SemanticStack;
+import semanticRecords.*;
 
 parser code {:
-
+    public SemanticStack semanticStack = new SemanticStack();
     public void syntax_error(Symbol token){
     	System.err.println("Syntax error at line: " + (token.right) + " at column: " + (token.left));
     }
@@ -77,13 +79,29 @@ constant_decl ::=
 ;
 
 variable_decl ::=
-      type IDENTIFIER
-    | type IDENTIFIER COMMA variable_list
+      type IDENTIFIER:id {:
+            Record record = new RecordID(id, 1, 1);
+            semanticStack.push(record);
+            System.out.println(semanticStack.toString());
+      :}
+    | type IDENTIFIER:id COMMA variable_list {:
+         Record record = new RecordID(id, 1, 1);
+         semanticStack.push(record);
+         System.out.println(semanticStack.toString());
+   :}
 ;
 
 variable_list ::=
-      IDENTIFIER
-    | variable_list COMMA IDENTIFIER
+      IDENTIFIER:id {:
+            Record record = new RecordID(id, 1, 1);
+            semanticStack.push(record);
+            System.out.println(semanticStack.toString());
+      :}
+    | variable_list COMMA IDENTIFIER:id {:
+            Record record = new RecordID(id, 1, 1);
+            semanticStack.push(record);
+            System.out.println(semanticStack.toString());
+      :}
 ;
 
 function_decls ::=
@@ -277,10 +295,26 @@ literal_value ::=
 ;
 
 type ::=
-      INT
-    | LONG
-    | CHAR
-    | SHORT
+      INT:type {:
+         Record record = new RecordType(type, 1, 1);
+         semanticStack.push(record);
+         System.out.println(semanticStack.toString());
+   :}
+    | LONG:type {:
+                   Record record = new RecordType(type, 1, 1);
+                   semanticStack.push(record);
+                   System.out.println(semanticStack.toString());
+             :}
+    | CHAR:type {:
+                   Record record = new RecordType(type, 1, 1);
+                   semanticStack.push(record);
+                   System.out.println(semanticStack.toString());
+             :}
+    | SHORT:type {:
+                    Record record = new RecordType(type, 1, 1);
+                    semanticStack.push(record);
+                    System.out.println(semanticStack.toString());
+              :}
 ;
 
 

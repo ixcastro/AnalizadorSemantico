@@ -7,5 +7,4 @@ public abstract class Record {
         this.line = line;
         this.column = column;
     }
-
 }

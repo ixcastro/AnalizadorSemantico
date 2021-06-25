@@ -9,4 +9,12 @@ public class SemanticStack {
     public void push(Record record) {
         stack.add(record);
     }
+
+    public String toString() {
+        String msg ="";
+        for (Record record : stack) {
+            msg += record.line;
+        }
+        return msg;
+    }
 }
